@@ -1,16 +1,17 @@
-function Card() {
+interface CardProps {
+    img: string;
+    title: string;
+    text: string;
+}
+
+function Card(props: CardProps) {
     return (
         <div className="card" style={{ width: '18rem' }}>
-            <img
-                src="https://i.pinimg.com/736x/97/d0/2a/97d02ad83bbf9161f2a4d73ff8b95195.jpg"
-                className="card-img-top"
-                alt="..."
-            />
+            <img src={props.img} className="card-img-top" alt="..." />
             <div className="card-body">
-                <h5 className="card-title">Cat</h5>
-                <p className="card-text">
-                    Silly Cute Cat
-                </p>
+                <h5 className="card-title">{props.title}</h5>
+                <p className="card-text">{props.text}</p>
+                <a href="#" className="btn btn-primary">View more</a>
             </div>
         </div>
     );
