@@ -17,11 +17,11 @@ function App() {
         <div><Info /></div>
         <div><CardList /></div>
       </Route>
-      <Route path="/card-info">
-        <CardInfo />
-      </Route>
-      <Route path="/catalog">
+      <Route exact path="/catalog">
         <div><CatalogItems /></div>
+      </Route>
+      <Route path="/catalog/:title">
+        <div><CardInfo /></div>
       </Route>
     </Switch>
     <div><Footer /></div>

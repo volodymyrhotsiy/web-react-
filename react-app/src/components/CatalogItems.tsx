@@ -1,51 +1,74 @@
 import CatalogCard from './CatalogCard';
 import { useState } from 'react';
 import Header from './Header';
+import axios from 'axios';
+import { useEffect } from 'react';
+import './Loader.css';
+
+export const base_url = "http://localhost:5000/cats";
+
+export async function getCats(url: string) {
+    try {
+        const response = await axios(url);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+}
 
 function CatalogItems() {
-    const items = [
-        {
-            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuAheo_YYcmrsyXM2vDVsjP-nqEoPIfqbN_azLTIhrjY7cLdUfb1vthTIqIHKvjdZV18A&usqp=CAU',
-            title: 'Myaus',
-            age: 2,
-            text: 'This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer',
-        },
-        {
-            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMJ1nPBsLGniRWG0Be-XEaF63WLfBgZEjeBsWGcaD4PtSxUwhrThAuCf_eS9odLshURU8&usqp=CAU',
-            title: 'Catus',
-            age: 1,
-            text: 'This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer',
-        },
-        {
-            img: 'https://i.pinimg.com/736x/d0/9d/29/d09d2961bb9d2a2b1ef5cec3ec38dade.jpg',
-            title: 'Jenny',
-            age: 3,
-            text: 'This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer',
-        },
-    ];
+    const [visibleItems, setVisibleItems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [visibleItems, setVisibleItems] = useState(items);
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const items = await getCats(base_url);
+                setVisibleItems(items);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
 
-    const sortItemsByTitle = () => {
-        setVisibleItems([...visibleItems].sort((a, b) => a.title.localeCompare(b.title)));
+        fetchData();
+    }, []);
+
+    const sortItemsByTitle = async () => {
+        setLoading(true);
+        const items = await getCats(base_url + "/title");
+        setVisibleItems(items);
+        setLoading(false);
     };
 
-    const sortItemsByAge = () => {
-        setVisibleItems([...visibleItems].sort((a, b) => a.age - b.age));
+    const sortItemsByAge = async () => {
+        setLoading(true);
+        const items = await getCats(base_url + "/age");
+        setVisibleItems(items);
+        setLoading(false);
     };
 
-    const sortItemsByTitleLength = () => {
-        setVisibleItems([...visibleItems].sort((a, b) => a.title.length - b.title.length));
+    const sortItemsByTitleLength = async () => {
+        setLoading(true);
+        const items = await getCats(base_url + "/text");
+        setVisibleItems(items);
+        setLoading(false);
     };
 
     const handleSearch = (searchInput: string) => {
-        const filteredItems = items.filter(item => item.title.toLowerCase().includes(searchInput.toLowerCase()));
+        const filteredItems = visibleItems.filter(item => item.title.toLowerCase().includes(searchInput.toLowerCase()));
         setVisibleItems(filteredItems);
     };
 
+    if (loading) {
+        return <div className="loader">Loading...</div>;
+    }
+
     return (
         <>
-        <Header onSearch={handleSearch} />
+            <Header onSearch={handleSearch} />
             <div className="wrapper">
                 <div className="container text-center">
                     <div className="row">
